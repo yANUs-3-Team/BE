@@ -19,7 +19,7 @@
    -   **CORS 처리**: cors
    
    ## 프로젝트 구조
-  .
+  
   ├── app.js              # Express 서버 메인 파일
   ├── package.json        # 프로젝트 의존성 및 스크립트 관리
   ├── .env                # 환경 변수 설정 파일
