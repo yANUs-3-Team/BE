@@ -1,4 +1,4 @@
-# 🌟 Express.js 기반 백엔드 API 서버
+# 🌟 몽글몽글 상상나래 (MGMG-BackEnd)
 
 본 프로젝트는 Express.js와 MySQL을 사용하여 구축된 백엔드 API 서버입니다. 사용자 인증(회원가입, 로그인) 및 게시글 관련 기능을 제공합니다.
 
