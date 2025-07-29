@@ -1,3 +1,7 @@
 # .gitignore
 .env
 patch_notes.md
+GEMINI.md
+
+.db
+.sql

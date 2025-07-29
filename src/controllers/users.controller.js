@@ -42,20 +42,17 @@ export const register = async (req, res) => {
   }
 };
 
-// 로그인 컨트롤러 (이메일 또는 사용자명으로 로그인)
+// 로그인 컨트롤러 (username으로 로그인)
 export const login = async (req, res) => {
-  const { loginId, password } = req.body; // loginId는 email 또는 username
+  console.log('Login request received:', req.body);
+  const { username, password } = req.body;
 
-  if (!loginId || !password) {
-    return res.status(400).json({ message: '로그인 ID와 비밀번호를 입력해주세요.' });
+  if (!username || !password) {
+    return res.status(400).json({ message: '사용자명과 비밀번호를 입력해주세요.' });
   }
 
   try {
-    // loginId가 이메일 형식인지 간단히 확인
-    const isEmail = loginId.includes('@');
-    const user = isEmail 
-      ? await findUserByEmail(loginId) 
-      : await findUserByUsername(loginId);
+    const user = await findUserByUsername(username);
 
     if (!user) {
       return res.status(401).json({ message: '존재하지 않는 사용자입니다.' });
