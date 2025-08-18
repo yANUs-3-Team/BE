@@ -48,8 +48,8 @@ export const register = async (req, res) => {
  * 로그인
  */
 export const login = async (req, res) => {
-  console.log('Login request received:', req.body);
-  const { username, password } = req.body;
+  console.log('로그인 요청 확인:', req.body);
+  const { username, password, user_id } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ message: '사용자명과 비밀번호를 입력해주세요.' });
