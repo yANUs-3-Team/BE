@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './src/api/users.routes.js';
 import articleRoutes from './src/api/articles.routes.js';
+import storyRoutes from './src/api/stories.routes.js';
 
 // .env 파일 로드
 dotenv.config();
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 // API 라우트 설정
 app.use('/api/users', userRoutes);
 app.use('/api/articles', articleRoutes);
+app.use('/api/stories', storyRoutes);
 
 
 // 서버 시작

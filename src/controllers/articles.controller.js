@@ -14,7 +14,7 @@ export const createArticle = async (req, res) => {
 
 /**     
  * 전체 게시글 가져오기
-*/
+ */
 export const getAllArticles = async (req, res) => {
     try {
         const articles = await articlesService.getAllArticles();
