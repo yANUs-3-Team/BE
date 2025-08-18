@@ -49,7 +49,7 @@ export const register = async (req, res) => {
  */
 export const login = async (req, res) => {
   console.log('로그인 요청 확인:', req.body);
-  const { username, password, user_id } = req.body;
+  const { username, password } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ message: '사용자명과 비밀번호를 입력해주세요.' });
@@ -70,7 +70,7 @@ export const login = async (req, res) => {
 
     // JWT 토큰 생성
     const token = jwt.sign(
-      { id: user.id, email: user.email, username: user.username },
+      { id: user.user_id, email: user.email, username: user.username }, // 사용자 정보 포함
       process.env.JWT_SECRET,
       { expiresIn: '1h' } // 토큰 유효기간 1시간
     );
