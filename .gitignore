@@ -2,6 +2,7 @@
 .env
 patch_notes.md
 GEMINI.md
+API.md
 
 .db
 .sql

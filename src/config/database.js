@@ -13,14 +13,14 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Test the connection
+// 연결 테스트
 (async () => {
   try {
     const connection = await pool.getConnection();
-    console.log('MySQL is connected.');
+    console.log('MySQL에 연결되었습니다.');
     connection.release();
   } catch (error) {
-    console.error('MySQL connection error:', error);
+    console.error('MySQL 연결 오류:', error);
   }
 })();
 

@@ -1,24 +1,32 @@
+// 사용자 관련 서비스
 
 import pool from '../config/database.js';
 import bcrypt from 'bcrypt';
 
 const saltRounds = 10; // 암호화 복잡도
 
-// 이메일로 사용자 찾기
+
+/**
+ *  이메일로 사용자 찾기
+ */
 export const findUserByEmail = async (email) => {
   const query = 'SELECT * FROM users WHERE email = ?';
   const [rows] = await pool.query(query, [email]);
   return rows[0];
 };
 
-// 사용자명으로 사용자 찾기
+/**
+ *  사용자명으로 사용자 찾기
+ */
 export const findUserByUsername = async (username) => {
   const query = 'SELECT * FROM users WHERE username = ?';
   const [rows] = await pool.query(query, [username]);
   return rows[0];
 };
 
-// 사용자 생성 (트랜잭션 적용)
+/**
+ *  사용자 생성 (트랜잭션 적용)
+ */
 export const createUser = async (userData) => {
   const { email, password, name, username, birth, parentName, parentPhone } = userData;
   const connection = await pool.getConnection(); // 커넥션 풀에서 커넥션 가져오기

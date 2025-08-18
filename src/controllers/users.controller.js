@@ -4,7 +4,9 @@ import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-// 회원가입 컨트롤러
+/**
+ * 회원가입
+ */
 export const register = async (req, res) => {
   // 1. 유효성 검사 결과 확인
   const errors = validationResult(req);
@@ -42,7 +44,9 @@ export const register = async (req, res) => {
   }
 };
 
-// 로그인 컨트롤러 (username으로 로그인)
+/**
+ * 로그인
+ */
 export const login = async (req, res) => {
   console.log('Login request received:', req.body);
   const { username, password } = req.body;
