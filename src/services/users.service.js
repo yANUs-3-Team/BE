@@ -21,7 +21,16 @@ export const findUserByEmail = async (email) => {
 export const findUserByUsername = async (username) => {
   const query = 'SELECT * FROM users WHERE username = ?';
   const [rows] = await pool.query(query, [username]);
-  return rows[0];
+  
+  // 결과 배열의 첫 번째 요소를 반환합니다. 결과가 없으면 undefined가 반환됩니다.
+  const user = rows[0]; 
+  
+  if (user) {
+    // user_id 필드를 추가하고 싶다면 이렇게 할 수 있습니다.
+    return { user_id: user.id, ...user };
+  }
+  
+  return undefined; // 사용자가 없으면 undefined 반환
 };
 
 /**
