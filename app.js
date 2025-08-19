@@ -11,10 +11,12 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT ||5000;
+const helmet = require('helmet');
 
 // 미들웨어 설정
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
+app.use(helmet());
 
 // 기본 라우트
 app.get('/', (req, res) => {
