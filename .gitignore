@@ -7,3 +7,5 @@ API.md
 .db
 .sql
 mgmg.sql
+
+node_modules/

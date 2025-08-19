@@ -1,4 +1,4 @@
-// 동화(Story) 관련 컨트롤러 (점진적 생성 방식)
+// 동화 관련 컨트롤러 (점진적 생성 방식)
 
 import {
   startNewStory,
@@ -10,8 +10,7 @@ import {
  *  새로운 동화 시작 컨트롤러
  */
 export const startStoryController = async (req, res) => {
-  // TODO: JWT 인증 도입 후 req.user.id 로 변경
-  const { userId } = req.body;
+  const { userId } = req.user.id;
   if (!userId) {
     return res.status(400).json({ message: 'userId가 필요합니다.' });
   }
