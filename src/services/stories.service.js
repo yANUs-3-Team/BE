@@ -12,8 +12,8 @@ export const startNewStory = async (userId, storySettings) => {
   
   try {
     // 1. AI 백엔드 연동 부분 주석 처리 및 목 데이터 사용
-     const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions`, storySettings);
-     const initialPageData = aiResponse.data;
+    const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions`, storySettings);
+    const initialPageData = aiResponse.data;
     
 
     // 2. 데이터베이스 트랜잭션 시작

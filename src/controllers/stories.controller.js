@@ -11,7 +11,7 @@ import {
  */
 export const startStoryController = async (req, res) => {
   // 1. 인증 미들웨어를 통과한 사용자 ID를 가져옵니다.
-  const userId = req.user.id;
+  const userId = req.user.user_id;
 
   // 2. 프론트엔드에서 보낸 동화 설정값들을 req.body에서 가져옵니다.
   const { name, personality, characteristics, location, era, genre, ending_point } = req.body;
