@@ -1,4 +1,4 @@
-// 동화(Story) 관련 서비스 (점진적 생성 방식)
+// 동화 관련 서비스 (점진적 생성 방식)
 
 import pool from '../config/database.js';
 

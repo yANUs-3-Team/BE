@@ -2,6 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import helmet from 'helmet';
 import userRoutes from './src/api/users.routes.js';
 import articleRoutes from './src/api/articles.routes.js';
 import storyRoutes from './src/api/stories.routes.js';
@@ -10,8 +11,7 @@ import storyRoutes from './src/api/stories.routes.js';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT ||5000;
-const helmet = require('helmet');
+const port = process.env.PORT || 5000;
 
 // 미들웨어 설정
 app.use(cors());
@@ -28,6 +28,16 @@ app.use('/users', userRoutes);
 app.use('/articles', articleRoutes);
 app.use('/stories', storyRoutes);
 
+// custom error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("뭐가 좀 이상한데요?");
+});
+
+// custom 404 페이지
+app.use((req, res, next) => {
+  res.status(404).send("404 에럽니다");
+});
 
 // 서버 시작
 app.listen(port, () => {

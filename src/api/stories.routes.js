@@ -1,4 +1,4 @@
-// /api/stories 경로에 대한 라우터
+// /stories 경로에 대한 라우터
 import express from 'express';
 import {
   startStoryController,
