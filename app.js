@@ -1,8 +1,8 @@
-
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import userRoutes from './src/api/users.routes.js';
 import articleRoutes from './src/api/articles.routes.js';
 import storyRoutes from './src/api/stories.routes.js';
@@ -13,10 +13,17 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+// CORS 옵션 설정
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000', // 허용할 프론트엔드 주소
+  credentials: true, // 쿠키를 주고받기 위한 설정
+};
+
 // 미들웨어 설정
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
+app.use(cookieParser());
 
 // 기본 라우트
 app.get('/', (req, res) => {
