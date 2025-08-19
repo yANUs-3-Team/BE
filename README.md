@@ -1,15 +1,18 @@
 # 🌟 몽글몽글 상상나래 (MGMG-BackEnd)
 
-본 프로젝트는 Express.js와 MySQL을 사용하여 구축된 백엔드 API 서버입니다. 사용자 인증(회원가입, 로그인) 및 게시글 관련 기능을 제공합니다.
+본 리포지토리 구축된 백엔드 API 서버입니다. 사용자 인증(회원가입, 로그인) 및 게시글 관련 기능, 동화 저장 관련 기능을 제공합니다.
 
 ## ✨ 주요 기능
 
 - **사용자 관리**
   - 회원가입 (Bcrypt 암호화)
   - 로그인 (JWT 토큰 발급)
-- **게시글 및 댓글** (구현 예정)
+- **게시글 및 댓글**
   - 게시글 CRUD
   - 댓글 CRUD
+- **동화 생성**
+  - 상호작용을 통한 페이지 단위 동화 생성
+  - 최종 동화 제목 설정
 
 ## 🛠️ 기술 스택
 
@@ -99,67 +102,3 @@ npm start
 ```
 
 서버가 정상적으로 실행되면 콘솔에 `서버가 http://localhost:3000 에서 실행 중입니다.` 메시지가 출력됩니다.
-
-## 📝 API 명세
-
-### `/api/users`
-
-#### `POST /register` - 회원가입
-
--   **Description**: 새로운 사용자를 등록합니다.
--   **Request Body**:
-
-| Key | Type | Description | Required |
-| --- | --- | --- | :---: |
-| `email` | String | 유효한 이메일 주소 | O |
-| `password` | String | 비밀번호 (최소 8자, 영문/숫자/특수문자 포함) | O |
-| `name` | String | 사용자 이름 | O |
-| `username` | String | 사용자명 (최소 4자, 영문/숫자) | O |
-| `birth` | String | 생년월일 (YYYY-MM-DD) | X |
-| `parentName` | String | 보호자 이름 | X |
-| `parentPhone` | String | 보호자 연락처 | X |
-
--   **Success Response (201)**:
-    ```json
-    {
-      "message": "회원가입 성공",
-      "user": {
-        "email": "test@example.com",
-        "name": "테스트",
-        "username": "testuser",
-        "birth": "2000-01-01",
-        "id": 1
-      }
-    }
-    ```
--   **Error Response**:
-    -   `400 Bad Request`: 유효성 검사 실패
-    -   `409 Conflict`: 이메일 또는 사용자명 중복
-
-#### `POST /login` - 로그인
-
--   **Description**: 사용자명과 비밀번호로 로그인하고 JWT 토큰을 발급받습니다.
--   **Request Body**:
-
-| Key | Type | Description | Required |
-| --- | --- | --- | :---: |
-| `username` | String | 사용자명 | O |
-| `password` | String | **[중요]** 평문 비밀번호 | O |
-
--   **Success Response (200)**:
-    ```json
-    {
-      "message": "로그인 성공",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "user": {
-        "id": 1,
-        "email": "test@example.com",
-        "username": "testuser"
-      }
-    }
-    ```
--   **Error Response**:
-    -   `400 Bad Request`: 필수 정보 누락
-    -   `401 Unauthorized`: 사용자 정보 불일치
-
----

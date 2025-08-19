@@ -22,9 +22,9 @@ app.get('/', (req, res) => {
 });
 
 // API 라우트 설정
-app.use('/api/users', userRoutes);
-app.use('/api/articles', articleRoutes);
-app.use('/api/stories', storyRoutes);
+app.use('/users', userRoutes);
+app.use('/articles', articleRoutes);
+app.use('/stories', storyRoutes);
 
 
 // 서버 시작
