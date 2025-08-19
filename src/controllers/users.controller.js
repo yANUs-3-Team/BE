@@ -79,9 +79,18 @@ export const login = async (req, res) => {
     const userResponse = { ...user };
     delete userResponse.password;
 
+    // JWT를 HttpOnly, Secure, SameSite 옵션을 적용한 쿠키로 설정
+    res.cookie('accessToken', token, {
+      httpOnly: true, // Javascript에서 쿠키에 접근 불가 (XSS 방어)
+      secure: process.env.NODE_ENV === 'production', // 프로덕션 환경(배포 후)에서만 HTTPS 강제
+      sameSite: 'None', // 다른 도메인 간의 통신을 위한 설정
+      path: '/', // 쿠키 경로 설정
+      maxAge: 60 * 60 * 1000 // 쿠키 유효기간 1시간 (밀리초 단위)
+    });
+
+    // 응답에서는 토큰을 제외하고 성공 메시지와 사용자 정보만 전달
     res.status(200).json({ 
       message: '로그인 성공', 
-      token,
       user: userResponse
     });
 
