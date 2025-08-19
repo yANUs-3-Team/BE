@@ -35,3 +35,8 @@ export const validateRedirect = (req, res, next) => {
     return res.status(400).send('유효하지 않은 형식의 URL입니다.');
   }
 };
+
+/*
+  리다이렉트 URL 검증 미들웨어
+  아직 사용하지 않을 예정이지만, 향후 리다이렉트 URL 검증을 위해 작성됨
+*/

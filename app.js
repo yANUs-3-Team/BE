@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes);
 app.use('/articles', articleRoutes);
 app.use('/stories', storyRoutes);
+app.disable('x-powered-by');
 
 // custom error handler
 app.use((err, req, res, next) => {
