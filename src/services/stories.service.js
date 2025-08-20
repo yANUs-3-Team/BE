@@ -8,6 +8,7 @@ import axios from 'axios';
  *  @returns {Promise<object>} - 새로 생성된 storyId와 AI가 생성한 첫 페이지 데이터
  */
 export const startNewStory = async (userId, storySettings) => {
+  const endingPoint = storySettings.ending_point;
   const connection = await pool.getConnection();
   
   try {
@@ -20,7 +21,7 @@ export const startNewStory = async (userId, storySettings) => {
     await connection.beginTransaction();
     // Story 테이블에 ending_point 저장
     const storyQuery = 'INSERT INTO Story (user_id, title, ending_point) VALUES (?, ?, ?)';
-    const [storyResult] = await connection.query(storyQuery, [userId, '', ending_point]);
+    const [storyResult] = await connection.query(storyQuery, [userId, '', endingPoint]);
     const newStoryId = storyResult.insertId;
 
     if (!newStoryId) {
