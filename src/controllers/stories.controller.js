@@ -4,6 +4,8 @@ import {
   startNewStory,
   addPageToStory,
   updateStoryTitle,
+  getStoryById,
+  getFullStoryById,
 } from '../services/stories.service.js';
 
 /**
@@ -65,5 +67,38 @@ export const updateTitleController = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ *  특정 동화 조회
+ */
+export const getStoryController = async (req, res) => {
+  const { storyId } = req.params;
+
+  try {
+    const storyData = await getStoryById(storyId);
+    if (!storyData) {
+      return res.status(404).json({ message: '해당 동화를 찾을 수 없습니다.' });
+    }
+    res.status(200).json({ message: '동화 조회 성공', data: storyData });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/**
+ *  특정 동화의 모든 내용 페이지 조회
+ */
+export const getStoryContentsController = async (req, res) => {
+  const { storyId } = req.params;
+
+  try {
+    const storyContents = await getFullStoryById(storyId);
+    res.status(200).json({ message: '동화 내용 페이지 조회 성공', data: storyContents });
+    console.log('동화 내용 페이지 조회 성공:', storyContents);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: '동화 내용 페이지 조회 중 오류 발생', data: storyContents });
   }
 };

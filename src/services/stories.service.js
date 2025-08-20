@@ -89,10 +89,10 @@ export const addPageToStory = async (storyId, { choiceNumber, aiSessionId }) => 
     if (ending_point && page_number === ending_point) {
       finish = true;
       // Ending point에 도달했을때 AI 백엔드에 title을 만들라고 요청
-      const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions/${aiSessionId}/end`, { "session_id": aiSessionId });
-      const { title } = aiResponse.data;
-      await updateStoryTitle(storyId, title);
-      console.log('addPageToStory: 엔딩 포인트 도달, 제목 업데이트:', title);
+      //const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions/${aiSessionId}/end`, { "session_id": aiSessionId });
+      //const { title } = aiResponse.data;
+      //await updateStoryTitle(storyId, title);
+      //console.log('addPageToStory: 엔딩 포인트 도달, 제목 업데이트:', title);
     }
 
     return { story_id: storyId, ...additionalPage, finish };
@@ -117,7 +117,7 @@ export const addPageToStory = async (storyId, { choiceNumber, aiSessionId }) => 
 };
 
 /**
- *  (3) 동화의 제목을 설정(업데이트)합니다.
+ *  동화 제목 설정
  */
 export const updateStoryTitle = async (storyId, title) => {
   const connection = await pool.getConnection();
@@ -130,6 +130,91 @@ export const updateStoryTitle = async (storyId, title) => {
   } catch (error) {
     if (connection) await connection.rollback();
     console.error('updateStoryTitle: Error caught!');
+    console.error('DB/서비스 에러:', error.message);
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+/**
+ *  특정 동화의 기본 정보 조회
+ */
+export const getStoryById = async (storyId) => {
+  const connection = await pool.getConnection();
+
+  try {
+    const [rows] = await connection.query('SELECT * FROM Story WHERE story_id = ?', [storyId]);
+    return rows[0] || null;
+  } catch (error) {
+    console.error('getStoryById: Error caught!');
+    console.error('DB/서비스 에러:', error.message);
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+/**
+ *  동화의 전체 정보 (기본 정보 + 모든 페이지) 조회
+ *  @param {number} storyId - 동화 ID
+ *  @returns {Promise<object|null>} - 동화 전체 정보 객체
+ */
+export const getFullStoryById = async (storyId) => {
+  // 1. 동화 기본 정보 조회
+  const storyInfo = await getStoryById(storyId);
+  if (!storyInfo) {
+    return null; // 동화가 없으면 null 반환
+  }
+
+  // 2. 동화 내용 페이지 조회
+  const storyPages = await getStoryContents(storyId);
+
+  // 3. 정보 조합하여 최종 객체 생성
+  const fullStory = {
+    story_id: storyInfo.story_id,
+    title: storyInfo.title,
+    created_at: storyInfo.created_at,
+    pages: storyPages
+  };
+
+  return fullStory;
+};
+
+/**
+ *  동화의 모든 내용 페이지 조회
+ *  @param {number} storyId - 동화 ID
+ *  @returns {Promise<Array<object>>} - 동화 내용 페이지 배열
+ */
+export const getStoryContents = async (storyId) => {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      SELECT DISTINCT page_number, content, img_url
+      FROM story_content 
+      WHERE story_id = ? 
+      ORDER BY page_number ASC
+    `;
+    const [rows] = await connection.query(query, [storyId]);
+    console.log('getStoryContents: 동화 내용 페이지 조회 성공:', rows);
+    return rows;
+  } catch (error) {
+    console.error('getStoryContents: Error caught!');
+    console.error('DB/서비스 에러:', error.message);
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+
+export const getStoryCreationName = async (storyId) => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.query('SELECT name FROM Story WHERE story_id = ?', [storyId]);
+    return rows[0]?.name || null;
+  } catch (error) {
+    console.error('getStoryCreationName: Error caught!');
     console.error('DB/서비스 에러:', error.message);
     throw error;
   } finally {
