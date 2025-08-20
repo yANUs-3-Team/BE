@@ -14,7 +14,21 @@ export const startNewStory = async (userId, storySettings) => {
     // 1. AI 백엔드 연동 부분 주석 처리 및 목 데이터 사용
     const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions`, storySettings);
     const initialPageData = aiResponse.data;
-    
+    /* 목데이터 셋팅
+    const initialPageData =  {
+     "message": "새로운 동화가 시작되었습니다.",
+     "data": {
+       "story_id": 9, // 여기에 story_id가 포함됩니다.
+        "page_number": 0,
+        "story": "...123",
+        "image": "...",
+        "choices_1": "..123.",
+        "choices_2": "..123.",
+        "choices_3": ".123..",
+        "choices_4": "..123."
+      }
+    };
+    */
 
     // 2. 데이터베이스 트랜잭션 시작
     await connection.beginTransaction();
@@ -41,7 +55,7 @@ export const startNewStory = async (userId, storySettings) => {
     await connection.commit();
 
     // 6. 프론트엔드에 전달할 최종 결과 반환
-    return { storyId: newStoryId, ...initialPageData };
+    return { story_id: newStoryId, ...initialPageData };
 
   } catch (error) {
     if (connection) await connection.rollback(); 

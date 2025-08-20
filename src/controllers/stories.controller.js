@@ -6,7 +6,7 @@ import {
   updateStoryTitle
 } from '../services/stories.service.js';
 
-/**
+/**2
  *  새로운 동화 시작 컨트롤러 (AI 연동)
  */
 export const startStoryController = async (req, res) => {

@@ -114,8 +114,7 @@ export const login = async (req, res) => {
  */
 export const getMe = async (req, res) => {
   try {
-    // auth.middleware에서 이미 사용자 정보를 조회하여 res.locals.user에 저장했음
-    const user = res.locals.user;
+    const user = req.user; 
 
     if (!user) {
       // 이 경우는 auth.middleware를 통과했는데도 사용자가 없는 경우로, 이론상 발생하기 어려움
