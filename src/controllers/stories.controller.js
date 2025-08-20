@@ -3,20 +3,15 @@
 import {
   startNewStory,
   addPageToStory,
-  updateStoryTitle
+  updateStoryTitle,
 } from '../services/stories.service.js';
 
-/**2
+/**
  *  새로운 동화 시작 컨트롤러 (AI 연동)
  */
 export const startStoryController = async (req, res) => {
-  // 1. 인증 미들웨어를 통과한 사용자 ID를 가져옵니다.
   const userId = req.user.user_id;
-
-  // 2. 프론트엔드에서 보낸 동화 설정값들을 req.body에서 가져옵니다.
   const { name, personality, characteristics, location, era, genre, ending_point } = req.body;
-
-  // 3. 필수 설정값 유효성 검사 (예시)
   if (!name || !genre) {
     return res.status(400).json({ message: '주인공 이름과 장르는 필수입니다.' });
   }
@@ -24,14 +19,9 @@ export const startStoryController = async (req, res) => {
   const storySettings = { name, personality, characteristics, location, era, genre, ending_point };
 
   try {
-    // 4. 서비스 계층에 사용자 ID와 설정값을 전달하여 새로운 동화 생성을 요청합니다.
     const newStoryData = await startNewStory(userId, storySettings);
-    
-    // 5. 생성된 storyId와 AI가 만들어준 첫 페이지 데이터를 프론트엔드에 전달합니다.
     res.status(201).json({ message: '새로운 동화가 시작되었습니다.', data: newStoryData });
-
   } catch (error) {
-    // 서비스에서 발생한 에러를 최종 처리
     res.status(500).json({ message: error.message || '서버 내부 오류가 발생했습니다.' });
   }
 };
@@ -41,15 +31,15 @@ export const startStoryController = async (req, res) => {
  */
 export const addPageController = async (req, res) => {
   const { storyId } = req.params;
-  const { content, imageUrl } = req.body;
+  const { session_id, choice } = req.body;
 
-  if (!content) {
-    return res.status(400).json({ message: '페이지 내용(content)은 필수입니다.' });
+  if (!choice || !session_id) {
+    return res.status(400).json({ message: '선택지 번호(choice)와 세션 ID(session_id)는 필수입니다.' });
   }
 
   try {
-    const newPageId = await addPageToStory(storyId, { content, imageUrl });
-    res.status(201).json({ message: '페이지가 성공적으로 추가되었습니다.', pageId: newPageId });
+    const newPageData = await addPageToStory(storyId, { choiceNumber: choice, aiSessionId: session_id });
+    res.status(201).json({ message: '페이지가 성공적으로 추가되었습니다.', data: newPageData });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

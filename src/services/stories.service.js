@@ -14,47 +14,23 @@ export const startNewStory = async (userId, storySettings) => {
     // 1. AI 백엔드 연동 부분 주석 처리 및 목 데이터 사용
     const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions`, storySettings);
     const initialPageData = aiResponse.data;
-    /* 목데이터 셋팅
-    const initialPageData =  {
-     "message": "새로운 동화가 시작되었습니다.",
-     "data": {
-       "story_id": 9, // 여기에 story_id가 포함됩니다.
-        "page_number": 0,
-        "story": "...123",
-        "image": "...",
-        "choices_1": "..123.",
-        "choices_2": "..123.",
-        "choices_3": ".123..",
-        "choices_4": "..123."
-      }
-    };
-    */
-
-    // 2. 데이터베이스 트랜잭션 시작
+    console.log('InitalPageData:', initialPageData);
+    
     await connection.beginTransaction();
-
-    // 3. Story 테이블에 새로운 동화 정보 삽입
     const storyQuery = 'INSERT INTO Story (user_id, title) VALUES (?, ?)';
-    // 제목은 마지막에 설정되므로, 초기에는 임시로 비워둡니다.
     const [storyResult] = await connection.query(storyQuery, [userId, '']);
     const newStoryId = storyResult.insertId;
 
     if (!newStoryId) {
       throw new Error('Story 생성에 실패했습니다.');
     }
-
-    // 4. AI가 생성한 첫 페이지 내용을 Story_content 테이블에 삽입
     const contentQuery = `
-      INSERT INTO Story_content (story_id, page_number, content, img_url, choice_1, choice_2, choice_3, choice_4)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO Story_content (story_id, page_number, content, img_url, choice_1, choice_2, choice_3, choice_4, ai_session_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const { page_number, story, image, choices_1, choices_2, choices_3, choices_4 } = initialPageData;
-    await connection.query(contentQuery, [newStoryId, page_number, story, image || null, choices_1, choices_2, choices_3, choices_4]);
-
-    // 5. 모든 작업이 성공하면 커밋
+    const { page_number, story, image, choices_1, choices_2, choices_3, choices_4, session_Id } = initialPageData;
+    await connection.query(contentQuery, [newStoryId, page_number, story, image || null, choices_1, choices_2, choices_3, choices_4, session_Id]);
     await connection.commit();
-
-    // 6. 프론트엔드에 전달할 최종 결과 반환
     return { story_id: newStoryId, ...initialPageData };
 
   } catch (error) {
@@ -72,12 +48,52 @@ export const startNewStory = async (userId, storySettings) => {
 };
 
 /**
- *  (2) 특정 동화에 새로운 페이지를 추가합니다.
+ *  새로운 페이지를 추가
+ *  @param {number} storyId - 동화 ID
+ *  @param {object} selectData - 선택지 데이터 { choiceNumber, aiSessionId } // Updated JSDoc
+ *  @returns {Promise<object>} - 추가된 페이지 데이터
  */
-export const addPageToStory = async (storyId, pageData) => {
-  // TODO: 나중에 DB에 페이지를 저장하는 로직 구현 필요
-  console.log(`(임시) ${storyId} 동화에 페이지 추가:`, pageData);
-  return Promise.resolve();
+export const addPageToStory = async (storyId, { choiceNumber, aiSessionId }) => {
+  const connection = await pool.getConnection();
+
+  try {
+    console.log('addPageToStory: Sending request to AI backend...');
+    console.log('URL:', `${process.env.AI_BACKEND_URL}/sessions/${aiSessionId}/choose`);
+    console.log('Payload:', { "choice_id": choiceNumber});
+
+    const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions/${aiSessionId}/choose`, { "choice_id": choiceNumber });
+    const additonalPage = aiResponse.data;
+    console.log('addPageToStory: Received response from AI backend:', additonalPage);
+
+    await connection.beginTransaction();
+    const contentQuery = `
+      INSERT INTO Story_content (story_id, page_number, content, img_url, choice_1, choice_2, choice_3, choice_4)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const { page_number, story, image, choices_1, choices_2, choices_3, choices_4 } = additonalPage;
+    console.log('addPageToStory: Inserting into DB with page_number:', page_number);
+    await connection.query(contentQuery, [storyId, page_number, story, image || null, choices_1, choices_2, choices_3, choices_4]);
+    await connection.commit();
+    console.log('addPageToStory: Page added successfully to DB.');
+    return { story_id: storyId, ...additonalPage };
+
+  } catch (error) {
+    if (connection) await connection.rollback();
+    console.error('addPageToStory: Error caught!');
+    if (error.response) {
+      console.error('AI 백엔드 에러:', error.response.data);
+      console.error('AI 백엔드 에러 상태:', error.response.status);
+      console.error('AI 백엔드 에러 헤더:', error.response.headers);
+    } else if (error.request) {
+      console.error('AI 백엔드 응답 없음:', error.request);
+    } else {
+      console.error('DB/서비스 에러:', error.message);
+    }
+    throw error;
+  } finally {
+    if (connection) connection.release();
+    console.log('addPageToStory: Database connection released.');
+  }
 };
 
 /**
