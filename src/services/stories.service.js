@@ -88,6 +88,11 @@ export const addPageToStory = async (storyId, { choiceNumber, aiSessionId }) => 
     let finish = false;
     if (ending_point && page_number === ending_point) {
       finish = true;
+      // Ending point에 도달했을때 AI 백엔드에 title을 만들라고 요청
+      const aiResponse = await axios.post(`${process.env.AI_BACKEND_URL}/sessions/${aiSessionId}/end`, { "session_id": aiSessionId });
+      const { title } = aiResponse.data;
+      await updateStoryTitle(storyId, title);
+      console.log('addPageToStory: 엔딩 포인트 도달, 제목 업데이트:', title);
     }
 
     return { story_id: storyId, ...additionalPage, finish };
@@ -115,7 +120,19 @@ export const addPageToStory = async (storyId, { choiceNumber, aiSessionId }) => 
  *  (3) 동화의 제목을 설정(업데이트)합니다.
  */
 export const updateStoryTitle = async (storyId, title) => {
-  // TODO: 나중에 DB에 제목을 업데이트하는 로직 구현 필요
-  console.log(`(임시) ${storyId} 동화의 제목을 '${title}'(으)로 설정`);
-  return Promise.resolve();
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    const updateQuery = 'UPDATE Story SET title = ? WHERE story_id = ?';
+    const [result] = await connection.query(updateQuery, [title, storyId]);
+    await connection.commit();
+    return Promise.resolve();
+  } catch (error) {
+    if (connection) await connection.rollback();
+    console.error('updateStoryTitle: Error caught!');
+    console.error('DB/서비스 에러:', error.message);
+    throw error;
+  } finally {
+    if (connection) connection.release();
+  }
 };
