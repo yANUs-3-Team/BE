@@ -1,8 +1,8 @@
-# 🌟 몽글몽글 상상나래 (MGMG-BackEnd)
+# 몽글몽글 상상나래 (MGMG-BackEnd)
 
 본 리포지토리 구축된 백엔드 API 서버입니다. 사용자 인증(회원가입, 로그인) 및 게시글 관련 기능, 동화 저장 관련 기능을 제공합니다.
 
-## ✨ 주요 기능
+## 주요 기능
 
 - **사용자 관리**
   - 회원가입 (Bcrypt 암호화)
@@ -26,7 +26,7 @@
 | **CORS** | cors |
 | **Language** | JavaScript (ESM) |
 
-## 📂 프로젝트 구조
+## 프로젝트 구조
 
 ```
 BE/
@@ -46,7 +46,7 @@ BE/
         └── users.service.js    # 비즈니스 로직 및 DB 연동 (Service)
 ```
 
-## 🚀 시작하기
+## 시작하기
 
 ### 1. 사전 준비
 
@@ -101,4 +101,44 @@ JWT_SECRET=your_very_secret_and_long_key
 npm start
 ```
 
+서버가 정상적으로 실행되면 콘솔에 `서버가 5000포트에서 실행 중입니다.` 메시지가 출력됩니다.``
+
+### 5. 서버 실행
+
+```bash
+npm start
+```
+
 서버가 정상적으로 실행되면 콘솔에 `서버가 5000포트에서 실행 중입니다.` 메시지가 출력됩니다.
+
+## API 문서
+
+### Users
+
+*   `POST /users/register`: 회원가입
+*   `POST /users/login`: 로그인
+*   `POST /users/logout`: 로그아웃
+*   `GET /users/me`: 유저정보 확인
+
+### Articles
+
+*   `POST /articles`: 게시글 생성
+*   `GET /articles`: 모든 게시글 조회
+*   `GET /articles/:article_id`: 특정 게시글 조회
+*   `PUT /articles/:article_id`: 게시글 수정
+*   `DELETE /articles/:article_id`: 게시글 삭제
+
+### Comments
+
+*   `POST /articles/:article_id/comments`: 댓글 작성
+*   `GET /articles/:article_id/comments`: 댓글 조회
+*   `PUT /articles/:article_id/comments/:comment_id`: 댓글 수정
+*   `DELETE /articles/:article_id/comments/:comment_id`: 댓글 삭제
+
+### Stories
+
+*   `POST /stories`: 동화 시작
+*   `POST /stories/:storyId/pages`: 동화 페이지  추가
+*   `PUT /stories/:storyId`: 제목 수정
+*   `GET /stories/:storyId`: 동화 제목 가져오기
+*   `GET /stories/:storyId/pages`: 동화 내용 가져오기
