@@ -71,10 +71,10 @@ npm install
 1.  MySQL에 접속하여 프로젝트에서 사용할 데이터베이스를 생성합니다.
 
     ```sql
-    CREATE DATABASE your_database_name;
+    CREATE DATABASE mgmg;
     ```
 
-2.  `mgmg.db.sql` 파일의 내용을 실행하여 필요한 테이블(`users`, `articles`, `article_comments`)을 생성합니다.
+2.  `mgmg.sql` 파일의 내용을 실행하여 필요한 테이블(`users`, `articles`, `article_comments`, `story`, `story_content`)을 생성합니다.
 
 ### 4. 환경 변수 설정
 
@@ -82,7 +82,7 @@ npm install
 
 ```env
 # 서버 포트
-PORT=3000
+PORT=5000
 
 # 데이터베이스 연결 정보
 DB_HOST=localhost
@@ -101,4 +101,4 @@ JWT_SECRET=your_very_secret_and_long_key
 npm start
 ```
 
-서버가 정상적으로 실행되면 콘솔에 `서버가 http://localhost:3000 에서 실행 중입니다.` 메시지가 출력됩니다.
+서버가 정상적으로 실행되면 콘솔에 `서버가 5000포트에서 실행 중입니다.` 메시지가 출력됩니다.
