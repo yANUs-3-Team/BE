@@ -15,18 +15,18 @@ export const createArticle = async (articleData) => {
 };
 
 /**
- * 전체 게시글 가져오기
+ * 전체 게시글 가져오기 (작성자 이름 포함)
  */
 export const getAllArticles = async () => {
-    const [rows] = await db.execute('SELECT * FROM articles');
+    const [rows] = await db.execute('SELECT a.*, u.username FROM articles a JOIN users u ON a.user_id = u.user_id');
     return rows;
 };
 
 /**
- * 게시글 조회
+ * 게시글 조회 (작성자 이름 포함)
  */
 export const getArticleById = async (articleId) => {
-    const [rows] = await db.execute('SELECT * FROM articles WHERE article_id = ?', [articleId]);
+    const [rows] = await db.execute('SELECT a.*, u.username FROM articles a JOIN users u ON a.user_id = u.user_id WHERE a.article_id = ?', [articleId]);
     return rows[0];
 };
 
@@ -47,5 +47,16 @@ export const updateArticle = async (articleId, articleData) => {
  */
 export const deleteArticle = async (articleId) => {
     const [result] = await db.execute('DELETE FROM articles WHERE article_id = ?', [articleId]);
+    return { affectedRows: result.affectedRows };
+};
+
+/**
+ * 본인 게시글 삭제
+ */
+export const deleteMyArticle = async (userId, articleId) => {
+    const [result] = await db.execute(
+        'DELETE FROM articles WHERE article_id = ? AND user_id = ?',
+        [articleId, userId]
+    );
     return { affectedRows: result.affectedRows };
 };

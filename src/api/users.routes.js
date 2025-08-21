@@ -1,7 +1,8 @@
 
 import express from 'express';
 import { body } from 'express-validator';
-import { register, login } from '../controllers/users.controller.js';
+import { register, login, getMe, logout } from '../controllers/users.controller.js';
+import { verifyToken } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
@@ -24,5 +25,11 @@ router.post(
 
 // 로그인 API
 router.post('/login', login);
+
+// 현재 사용자 정보 조회 API (인증 필요)
+router.get('/me', verifyToken, getMe);
+
+// 로그아웃 API
+router.post('/logout', logout);
 
 export default router;

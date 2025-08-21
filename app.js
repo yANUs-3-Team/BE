@@ -25,6 +25,15 @@ app.use(express.json());
 app.use(helmet());
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  console.log("[dbg] method:", req.method);
+  console.log("[dbg] url:", req.originalUrl);
+  console.log("[dbg] content-type:", req.headers["content-type"]);
+  console.log("[dbg] has body?:", typeof req.body);
+  console.log("[dbg] body:", req.body);
+  next();
+});
+
 // 기본 라우트
 app.get('/', (req, res) => {
   res.send('Hello, Express 백엔드 서버!');

@@ -18,6 +18,7 @@
   "homepage": "https://github.com/yANUs-3-Team/BE#readme",
   "description": "",
   "dependencies": {
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

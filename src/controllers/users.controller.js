@@ -68,9 +68,9 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
     }
 
-    // JWT 토큰 생성
+    // JWT 토큰 생성 (ID로 username 사용)
     const token = jwt.sign(
-      { id: user.user_id, email: user.email, username: user.username }, // 사용자 정보 포함
+      { username: user.username, email: user.email }, // id 대신 username을 토큰에 저장
       process.env.JWT_SECRET,
       { expiresIn: '1h' } // 토큰 유효기간 1시간
     );
@@ -80,13 +80,22 @@ export const login = async (req, res) => {
     delete userResponse.password;
 
     // JWT를 HttpOnly, Secure, SameSite 옵션을 적용한 쿠키로 설정
-    res.cookie('accessToken', token, {
-      httpOnly: true, // Javascript에서 쿠키에 접근 불가 (XSS 방어)
-      secure: process.env.NODE_ENV === 'production', // 프로덕션 환경(배포 후)에서만 HTTPS 강제
-      sameSite: 'None', // 다른 도메인 간의 통신을 위한 설정
-      path: '/', // 쿠키 경로 설정
-      maxAge: 60 * 60 * 1000 // 쿠키 유효기간 1시간 (밀리초 단위)
-    });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true, // 프론트엔드가 HTTPS를 사용하므로 항상 true
+      sameSite: 'None', // secure: true가 필수
+      path: '/',
+      maxAge: 60 * 60 * 1000
+    };
+
+    // --- DEBUGGING LOGS ---
+    console.log('--- Cookie Debugging ---');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('Cookie Options:', cookieOptions);
+    console.log('Setting cookie and sending response...');
+    // --- END DEBUGGING LOGS ---
+
+    res.cookie('authorization', `Bearer ${token}`, cookieOptions);
 
     // 응답에서는 토큰을 제외하고 성공 메시지와 사용자 정보만 전달
     res.status(200).json({ 
@@ -96,6 +105,50 @@ export const login = async (req, res) => {
 
   } catch (error) {
     console.error('Login Error:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+/**
+ * 현재 로그인된 사용자 정보 조회
+ */
+export const getMe = async (req, res) => {
+  try {
+    const user = req.user; 
+
+    if (!user) {
+      // 이 경우는 auth.middleware를 통과했는데도 사용자가 없는 경우로, 이론상 발생하기 어려움
+      return res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    // 비밀번호 등 민감한 정보 제외
+    const { password, ...userResponse } = user;
+
+    res.status(200).json({ user: userResponse });
+  } catch (error) {
+    console.error('GetMe Error:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};
+
+/**
+ * 로그아웃
+ */
+export const logout = (req, res) => {
+  try {
+    // 'authorization' 쿠키를 지웁니다.
+    // 쿠키의 값을 비우고, maxAge를 0으로 설정하여 즉시 만료시킵니다.
+    res.cookie('authorization', '', {
+      httpOnly: true,
+      secure: true, // 쿠키 설정 시와 동일한 옵션
+      sameSite: 'None', // 쿠키 설정 시와 동일한 옵션
+      path: '/',
+      maxAge: 0
+    });
+
+    res.status(200).json({ message: '로그아웃 성공' });
+  } catch (error) {
+    console.error('Logout Error:', error);
     res.status(500).json({ message: '서버 오류가 발생했습니다.' });
   }
 };
