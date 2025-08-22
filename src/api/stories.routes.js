@@ -16,11 +16,11 @@ const router = express.Router();
 // 새로운 동화 시작 (인증 필요)
 router.post('/', verifyToken, startStoryController);
 
-// 특정 동화에 페이지 추가 (인증 필요)
+// 생성되는 동화에 페이지 추가 (인증 필요)
 router.post('/:storyId/pages', verifyToken, addPageController);
 
-// 특정 동화의 제목 설정 (인증 필요)
-router.put('/:storyId', verifyToken, updateTitleController);
+// 생성되는 동화의 제목 설정 (인증 필요)
+router.put('/:storyId/title', verifyToken, updateTitleController);
 
 // 특정 동화 조회 (인증 필요)
 router.get('/:storyId', verifyToken, getStoryController);
